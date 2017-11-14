@@ -10,7 +10,7 @@ Provide access to the see the code and a link to see the program running.
 
 ## Summary of Development
 
-###Ticker Class
+### Ticker Class
 ```
     Name
     fifteenm
