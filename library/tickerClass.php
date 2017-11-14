@@ -29,11 +29,11 @@ class TickerClass
      */
     public function setTickerValues($tickerObj)
     {
-        if(is_object($tickerObj))
+        if (is_object($tickerObj))
         {
-            foreach($tickerObj as $itemName => $itemValue)
+            foreach ($tickerObj as $itemName => $itemValue)
             {
-                switch($itemName)
+                switch ($itemName)
                 {
                     case "15m":
                         $this->fifteenm = $itemValue;

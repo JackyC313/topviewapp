@@ -10,7 +10,6 @@
 
 class SiteFacade
 {
-    private $display; 
     private $tickerPath;
     private $tickerJsonObj;
     private $tickerArray;
@@ -21,7 +20,16 @@ class SiteFacade
      */
     function __construct($datafilePath)
     {
-        $this->display = true; // Display table on showTicker method
+        $this->setTickerPath($datafilePath);
+        $this->tickerArray = array();
+    }
+
+    /**
+     * set ticker data file path (in case it needs to be updated)
+     * @return void
+     */
+    protected function setTickerPath($datafilePath)
+    {
         $this->tickerPath = $datafilePath;
     }
 
@@ -31,7 +39,7 @@ class SiteFacade
      */
     protected function readFiletoJsonObj() 
     {
-        if(($this->tickerPath === null) || ($this->tickerPath == ''))
+        if (($this->tickerPath === null) || ($this->tickerPath == ''))
         {
             throw new Exception('Source for data is not set');
             return;
@@ -39,11 +47,11 @@ class SiteFacade
         if (file_exists($this->tickerPath))
         {
             $filecontents = file_get_contents($this->tickerPath);
-            if($filecontents === false) {
+            if ($filecontents === false) {
                 throw new Exception('Problem reading from source');
             } else {
                 $jsonData = json_decode($filecontents);
-                if($jsonData)
+                if ($jsonData)
                 {
                     $this->tickerJsonObj = $jsonData;
                 } else {
@@ -63,9 +71,10 @@ class SiteFacade
      */
     protected function setTickerArray()
     {
-        if(is_object($this->tickerJsonObj))
+        $this->tickerArray = array();
+        if (is_object($this->tickerJsonObj))
         {
-            foreach($this->tickerJsonObj as $itemName => $jsonObj)
+            foreach ($this->tickerJsonObj as $itemName => $jsonObj)
             {
                 $tickerObj = new tickerClass($itemName);
                 $tickerObj->setTickerValues($jsonObj);
@@ -79,32 +88,40 @@ class SiteFacade
 
     /**
      * 4) showTicker - show Ticker Table based on Ticker Array of Ticker Objects
-     * - $this->display used to determine whether this method does the display also (default is true)
+     * @param boolean - $display is used to determine whether this method does the display also (default is true)
+     * @param integer - $resultsLimit limits the results displayed from the back end (optional, 0 means no limit)
      * @return string - Ticker Table HTML code
      */
-    protected function showTicker()
+    protected function showTicker($display = false, $resultsLimit = 0)
     {
         $templateHeader = 'library/templates/tickerTableHeader.tpl';
         $templateItems = 'library/templates/tickerTableItem.tpl';
         $templateFooter = 'library/templates/tickerTableFooter.tpl';
+        $counter_result = 1;
+    
         ob_start();
         if (is_array($this->tickerArray) && count($this->tickerArray) > 0)
         {
             include $templateHeader;
-            foreach($this->tickerArray as $tickerItem)
+            foreach ($this->tickerArray as $tickerItem)
             {
                 $tickerItems = $tickerItem->getTickerValues();
                 foreach ($tickerItems as $key => $value) {
                     ${$key} = $value;
                 }
                 include $templateItems;
+                $counter_result++;
+                if (($resultsLimit != 0) && ($counter_result > $resultsLimit))
+                {
+                    break;
+                }
             }
             include $templateFooter;
         } else {
 
         }
         $templateDisplay = ob_get_clean();
-        if($this->display)
+        if ($display)
         {
             echo $templateDisplay;
         }
@@ -113,15 +130,15 @@ class SiteFacade
 
     /**
      * 5) runFacade - runs everything together at once readFiletoJsonObj, setTickerArray, and showTicker
-     * @input boolean - used to determine whether showTicker does the display also (default is true)
+     * @param boolean - $display is used to determine whether this method does the display also (default is true)
+     * @param integer - $resultsLimit limits the results displayed from the back end (optional, 0 means no limit)
      * @return string - Ticker Table HTML code
      */
-    public function runFacade($display = true) {
+    public function runFacade($display = true, $resultsLimit = 0) {
         try {
-            $this->display = $display;
             $this->readFiletoJsonObj();
             $this->setTickerArray();
-            return $this->showTicker();
+            return $this->showTicker($display, $resultsLimit);
         } catch (Exception $e) {
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }

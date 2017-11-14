@@ -67,8 +67,10 @@ $baseSite = basename($_SERVER['PHP_SELF']);
             <div id="no-more-tables">
                 <?php
                     // PHP Code to run SiteFacade
+                    $displayOnScreen = true;
+                    $displayLimit = 100;
                     $siteFacade = new SiteFacade("data/ticker.json");
-                    $siteFacade->runFacade();
+                    $siteFacade->runFacade($displayOnScreen, $displayLimit);
                 ?>
             </div>
         </div>
