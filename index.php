@@ -20,6 +20,8 @@ $baseSite = basename($_SERVER['PHP_SELF']);
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link href="css/app.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -55,15 +57,21 @@ $baseSite = basename($_SERVER['PHP_SELF']);
     </nav>
 
     <div class="container">
-        <h2>Ticker Table</h2>
-        <div id="tickerNum"></div>
-        <div id="tickerCounter"></div>
-
-        <?php
-            // PHP Code to run SiteFacade
-            $siteFacade = new SiteFacade("data/ticker.json");
-            $siteFacade->runFacade();
-        ?>
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center">Ticker Table (<span id="tickerCount"></span> Items in total)</h2>
+                <div id="message" class="alert alert-danger hidden"></div>        
+                </div>
+        </div>
+        <div class="row">
+            <div id="no-more-tables">
+                <?php
+                    // PHP Code to run SiteFacade
+                    $siteFacade = new SiteFacade("data/ticker.json");
+                    $siteFacade->runFacade();
+                ?>
+            </div>
+        </div>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

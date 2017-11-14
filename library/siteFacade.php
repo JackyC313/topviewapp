@@ -33,11 +33,28 @@ class SiteFacade
     {
         if(($this->tickerPath === null) || ($this->tickerPath == ''))
         {
-            // TODO: Error Handling
-            echo "tickerPath Not Set!";
+            throw new Exception('Source for data is not set');
             return;
         }
-        $this->tickerJsonObj = json_decode(file_get_contents($this->tickerPath));
+        if (file_exists($this->tickerPath))
+        {
+            $filecontents = file_get_contents($this->tickerPath);
+            if($filecontents === false) {
+                throw new Exception('Problem reading from source');
+            } else {
+                $jsonData = json_decode($filecontents);
+                if($jsonData)
+                {
+                    $this->tickerJsonObj = $jsonData;
+                } else {
+                    throw new Exception('Source data is invalid');
+                }
+            }
+        } else {
+            throw new Exception('Source not found');
+        }
+
+        
     }
 
     /**
@@ -100,9 +117,13 @@ class SiteFacade
      * @return string - Ticker Table HTML code
      */
     public function runFacade($display = true) {
-        $this->display = $display;
-        $this->readFiletoJsonObj();
-        $this->setTickerArray();
-        return $this->showTicker();
+        try {
+            $this->display = $display;
+            $this->readFiletoJsonObj();
+            $this->setTickerArray();
+            return $this->showTicker();
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
     }
 }

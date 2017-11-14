@@ -6,6 +6,9 @@ $(function() {
     });
 
     // Run limitForm to limit initial display
+    var rowCount = $('#tickerTable > tbody > tr').length;
+    $('#tickerCount').html(rowCount);
+    
     limitForm();
 });
 
@@ -18,20 +21,35 @@ $(function() {
  * 4) and finally add a Hidden class to hide all other entries past limit
  */
 function limitForm() {
+    $('#message').html('');
+    $('#message').addClass('hidden');
     var rowLimit = $('#tickerLimit').val();
-    var rowCount = $('#tickerTable > tbody > tr').length;
-    console.log('rowLimit is ' + rowLimit + ' rowCount is ' + rowCount);
-    $('#tickerTable > tbody > tr').each(function(counter){
-        $this = $(this);
-        if(counter >= rowLimit)
-        {
-            console.log('Add @ ' + counter + ' ' + rowLimit);
-            $this.addClass('hidden');
-        } else {
-            console.log('Remove @ ' + counter + ' ' + rowLimit);
-            $this.removeClass('hidden');
-        }
-        counter++;
-    });
+    if(validateInput(rowLimit) == false) {
+        $('#message').html('Limit is an invalid number');
+        $('#message').removeClass('hidden');
+    } else {
+        var rowCount = $('#tickerTable > tbody > tr').length;
+        console.log('rowLimit is ' + rowLimit + ' rowCount is ' + rowCount);
+        $('#tickerTable > tbody > tr').each(function(counter){
+            $this = $(this);
+            if(counter >= rowLimit)
+            {
+                console.log('Add @ ' + counter + ' ' + rowLimit);
+                $this.addClass('hidden');
+            } else {
+                console.log('Remove @ ' + counter + ' ' + rowLimit);
+                $this.removeClass('hidden');
+            }
+            counter++;
+        });
+    }
+}
 
+function validateInput(number) {
+    // If x is Not a Number or less than one, its invalid
+    if (isNaN(number) || number < 1) {
+        return false;
+    } else {
+        return true;
+    }
 }
